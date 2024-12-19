@@ -27,6 +27,7 @@
 //! If you have a ton of people doing work on different layers, it might be ideal. Otherwise,
 //! it might add too much extra time to debugging work!
 //!
+mod extractors;
 mod function_impl;
 
 use std::future::Future;
@@ -69,9 +70,10 @@ pub trait Extractor<T, State> {
     type Error;
 
     /// Extract the input type from the input value and the given state context.
-    fn extract(topic: T, context: &impl Into<State>) -> Result<Self, Self::Error>
+    fn extract<Context>(topic: T, context: &Context) -> Result<Self, Self::Error>
     where
-        Self: Sized;
+        Self: Sized,
+        Context: Into<State> + Clone;
 }
 
 /// # Handler
@@ -96,3 +98,5 @@ pub trait Handler<T, Args, State>: Clone {
     /// Invoke the handler with the given input value and state context.
     fn invoke(&self, frame: impl Into<T>, state: State) -> Self::Future;
 }
+
+pub use extractors::State;

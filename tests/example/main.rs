@@ -1,4 +1,4 @@
-use transmute::{Extractor, Handler};
+use transmute::{Extractor, Handler, State};
 
 // Create a core type - "Frame", a byte buffer envelope.
 #[derive(Debug, Clone, PartialEq)]
@@ -41,7 +41,7 @@ impl std::fmt::Display for Topic {
 impl<State> Extractor<Frame, State> for Topic {
     type Error = String;
 
-    fn extract(topic: Frame, _: &impl Into<State>) -> Result<Self, Self::Error>
+    fn extract<Context>(topic: Frame, _: &Context) -> Result<Self, Self::Error>
     where
         Self: Sized,
     {
@@ -170,6 +170,67 @@ async fn narrowing_types() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(
         handle_the_handler(&handler, ()).await?,
         Frame(b"Hello, world!".to_vec())
+    );
+
+    assert_eq!(
+        tersely_handle_the_handler(&handler, ()).await?,
+        Frame(b"Hello, world!".to_vec())
+    );
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn narrowing_types_closures() -> Result<(), Box<dyn std::error::Error>> {
+    let handler = |topic: Topic| async move { format!("Hello, {topic}!") };
+
+    async fn tersely_handle_the_handler<Args, State>(
+        handler: impl Handler<Frame, Args, State, Error = Box<dyn std::error::Error>>,
+        state: State,
+    ) -> Result<Frame, Box<dyn std::error::Error>> {
+        handler
+            .invoke(Frame(b"world".to_vec()), state)
+            .await
+            .map(Into::into)
+    }
+
+    assert_eq!(
+        tersely_handle_the_handler(handler, ()).await?,
+        Frame(b"Hello, world!".to_vec())
+    );
+
+    Ok(())
+}
+
+#[tokio::test]
+//using state
+async fn extracting_from_state() -> Result<(), Box<dyn std::error::Error>> {
+    // Because the state is generic, we can use it to pass in any context we want.
+    // This is left up to the consumer to decide, but more importantly, it's a way
+    // to avoid deciding on that until the last minute. This means you can model
+    // your application as you learn about the things you need to do, without having
+    // to re-implement your extractors and handlers that don't care.
+    #[derive(Debug, Clone)]
+    struct ArbitraryState;
+
+    impl ArbitraryState {
+        fn how_arbitrary(&self) -> &'static str {
+            "very arbitrary"
+        }
+    }
+
+    async fn handler(topic: Topic, State(state): State<ArbitraryState>) -> String {
+        format!(
+            "Hello, {topic} - {how_arbitrary}!",
+            how_arbitrary = state.how_arbitrary()
+        )
+    }
+
+    assert_eq!(
+        handler
+            .invoke(Frame(b"world".to_vec()), ArbitraryState)
+            .await?,
+        Frame(b"Hello, world - very arbitrary!".to_vec())
     );
 
     Ok(())

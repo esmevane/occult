@@ -9,7 +9,7 @@ impl<T, Func, Future, State, Output, $($param,)*>
 where
     T: Clone + Send + 'static,
     Func: FnOnce($($param,)*) -> Future + Clone + Send + 'static,
-    State: Send + Sync + 'static,
+    State: Clone + Send + Sync + 'static,
     Output: Into<T>,
     Future: std::future::Future<Output = Output> + Send + 'static,
     $(
