@@ -8,7 +8,7 @@
 /// # Example
 ///
 /// ```rust
-/// use transmute::{Extractor, Handler};
+/// use occult::{Extractor, Handler};
 ///
 /// struct ArbitraryState;
 ///

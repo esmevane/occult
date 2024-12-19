@@ -75,6 +75,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "occult"
+version = "0.1.0"
+dependencies = [
+ "tokio",
+]
+
+[[package]]
 name = "pin-project-lite"
 version = "0.2.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -135,13 +142,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "transmute"
-version = "0.1.0"
-dependencies = [
- "tokio",
 ]
 
 [[package]]

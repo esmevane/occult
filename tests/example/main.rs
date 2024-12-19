@@ -1,4 +1,4 @@
-use transmute::{Extractor, Handler, State};
+use occult::{Extractor, Handler, State};
 
 // Create a core type - "Frame", a byte buffer envelope.
 #[derive(Debug, Clone, PartialEq)]

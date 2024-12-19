@@ -1,7 +1,9 @@
 #![deny(missing_docs)]
-//! # Transmute
+//! # Occult
 //!
-//! Transmute gives you the ability to define your own async "magic handler" functions. A
+//! Teach your code magic.
+//!
+//! Occult gives you the ability to define your own async "magic handler" functions. A
 //! magic handler is a function that can take any number of arguments and return a future,
 //! so long as those arguments can be extracted from a single input value.
 //!
@@ -11,7 +13,7 @@
 //! handlers can be tough to understand, and so they tend to be tucked away inside their
 //! respective crates.
 //!
-//! Transmute aims to make it easy to define your own magic handlers, so you can use them
+//! Occult aims to make it easy to define your own magic handlers, so you can use them
 //! yourself for your own programs. It's a more general implementation of the pattern, so
 //! you can pop it into your project and make a magic handler for whatever you want without
 //! leveraging those other crates.
@@ -78,7 +80,7 @@ pub trait Extractor<T, State> {
 
 /// # Handler
 ///
-/// The Handler trait often doesn't need to be defined at all in order to work. Transmute
+/// The Handler trait often doesn't need to be defined at all in order to work. Occult
 /// provides an automatic implementation for any function that has uniformity in its extractors.
 ///
 /// That means that generally, all you need to implement to get the handler to work is:
