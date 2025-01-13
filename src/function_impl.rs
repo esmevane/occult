@@ -1,7 +1,3 @@
-use std::{future::Future, pin::Pin};
-
-type BoxFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
-
 macro_rules! define_handler_for_tuple ({ $($param:ident)* } => {
 #[allow(non_snake_case, unused_mut, unused_variables)]
 impl<T, Func, Future, State, Output, $($param,)*>
@@ -19,9 +15,8 @@ where
 {
     type Response = T;
     type Error = Box<dyn std::error::Error>;
-    type Future = BoxFuture<'static, Result<Self::Response, Self::Error>>;
 
-    fn invoke(&self, input: impl Into<T>, state: State) -> Self::Future {
+    fn invoke(&self, input: impl Into<T>, state: State) -> impl std::future::Future<Output = Result<Self::Response, Self::Error>> {
         let handler = self.clone();
         let input = input.into();
 
