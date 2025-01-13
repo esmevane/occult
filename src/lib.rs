@@ -94,11 +94,13 @@ pub trait Handler<T, Args, State>: Clone {
     type Response: Into<T>;
     /// The error type that the handler will return.
     type Error;
-    /// The future type that the handler will return.
-    type Future: Future<Output = Result<Self::Response, Self::Error>>;
 
     /// Invoke the handler with the given input value and state context.
-    fn invoke(&self, frame: impl Into<T>, state: State) -> Self::Future;
+    fn invoke(
+        &self,
+        into_topic: impl Into<T>,
+        state: State,
+    ) -> impl Future<Output = Result<Self::Response, Self::Error>>;
 }
 
 pub use extractors::State;
